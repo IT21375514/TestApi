@@ -1,5 +1,4 @@
 # TestApi
 .NET Core with ADO.NET
 
-SQL DB Scripts can be found in TestApi>DBScripts
-API Request collection (postman export) can be found in TestApi > PostmanExport
+SQL database scripts can be found in the "TestApi > DBScripts" directory. The API request collection (Postman export) can be found in the "TestApi > PostmanExport" directory.
