@@ -19,6 +19,8 @@ namespace TestApi.Controllers
         }
 
 
+        //Create customer
+
         [Route("CreateCustomer")]
         [HttpPost]
         public async Task<IActionResult> CreateCustomer(Customer obj)
@@ -37,7 +39,7 @@ namespace TestApi.Controllers
             try
             {
                 con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-                string query = "INSERT INTO Customer VALUES (NEWID(), @UserName, @Email, @FirstName, @LastName, GETDATE(), @IsActive)";
+                string query = "INSERT INTO Customer OUTPUT INSERTED.UserId, INSERTED.CreatedOn VALUES (NEWID(), @UserName, @Email, @FirstName, @LastName, GETDATE(), @IsActive)";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -48,10 +50,21 @@ namespace TestApi.Controllers
                     cmd.Parameters.AddWithValue("@IsActive", obj.IsActive);
 
                     con.Open();
-                    string result = (string)cmd.ExecuteScalar();
-                }
+                    SqlDataReader reader = cmd.ExecuteReader();
 
-                return new ObjectResult($"Customer added successfully") { StatusCode = StatusCodes.Status201Created };
+                    if (reader.Read())
+                    {
+                        // Read the inserted row data
+                        obj.UserId = Guid.Parse(reader["UserId"].ToString());
+                        obj.CreatedOn = Convert.ToDateTime(reader["CreatedOn"]);
+
+                        return new ObjectResult(obj) { StatusCode = StatusCodes.Status201Created };
+                    }
+                    else
+                    {
+                        return StatusCode(500, "Failed to retrieve inserted data.");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -64,6 +77,10 @@ namespace TestApi.Controllers
                 con?.Close();
             }
         }
+
+
+
+        //Retrieve all customers
 
         [Route("GetAllCustomers")]
         [HttpGet]
@@ -104,6 +121,9 @@ namespace TestApi.Controllers
 
         }
 
+
+        //Update customer
+
         [Route("UpdateCustomer")]
         [HttpPost]
         public async Task<IActionResult> UpdateCustomer(Customer obj)
@@ -122,7 +142,7 @@ namespace TestApi.Controllers
             try
             {
                 con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
-                string query = "Update Customer set Username = @Username, Email = @Email, FirstName = @FirstName, LastName = @LastName, IsActive = @IsActive where UserId = @UserId";
+                string query = "Update Customer set Username = @Username, Email = @Email, FirstName = @FirstName, LastName = @LastName, IsActive = @IsActive OUTPUT INSERTED.CreatedOn where UserId = @UserId";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -135,11 +155,14 @@ namespace TestApi.Controllers
 
                     con.Open();
 
-                    int rowsAffected = cmd.ExecuteNonQuery();
+                    SqlDataReader reader = cmd.ExecuteReader();
 
-                    if (rowsAffected > 0)
+                    if (reader.Read())
                     {
-                        return Ok($"Customer updated successfully");
+                        // Read the updated row data
+                        obj.CreatedOn = Convert.ToDateTime(reader["CreatedOn"]);
+
+                        return Ok(obj);
                     }
                     else
                     {
@@ -159,6 +182,9 @@ namespace TestApi.Controllers
                 con?.Close();
             }
         }
+
+
+        //Delete customer
 
         [Route("DeleteCustomer")]
         [HttpDelete]

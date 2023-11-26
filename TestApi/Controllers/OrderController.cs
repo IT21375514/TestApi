@@ -16,6 +16,9 @@ namespace TestApi.Controllers
             _configuration = configuration;
         }
 
+
+        //Retrieve active orders of a customer
+
         [Route("GetActiveOrdersByCustomer")]
         [HttpGet]
         public async Task<IActionResult> GetActiveOrdersByCustomer(Guid customerId)
