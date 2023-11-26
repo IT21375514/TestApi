@@ -1,0 +1,12 @@
+-- =============================================
+-- Create date: 25.11.2023
+-- Description: OrderTableDataInsertion
+-- =============================================
+
+INSERT INTO [Order] (OrderId, ProductId, OrderStatus, OrderType, OrderBy, OrderedOn, ShippedOn, IsActive)
+VALUES 
+	(NEWID(), '0B8CE8A3-AB75-472A-9128-D6A590C541CD', 1, 2, '3589C778-7EEB-44DD-B777-723126CC2C43', GETDATE(), NULL, 1),
+	(NEWID(), '77139417-71C4-411C-9DED-9B982EBB9176', 2, 2, '3589C778-7EEB-44DD-B777-723126CC2C43', GETDATE(), NULL, 1),
+	(NEWID(), '73AAF15D-86E4-46F4-898E-9516930DBE25', 2, 1, '3589C778-7EEB-44DD-B777-723126CC2C43', GETDATE(), NULL, 1),
+	(NEWID(), '647EAE5C-57E9-4D89-A0F5-2309243B1834', 2, 3, '3589C778-7EEB-44DD-B777-723126CC2C43', GETDATE(), NULL, 0)
+	;
